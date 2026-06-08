@@ -8,7 +8,7 @@ import { theme } from './theme.js';
 function InterpolatedSurface({ telemetry, viewMode }) {
   const meshRef = useRef();
   const positionAttributeRef = useRef();
-  const SURFACE_OFFSET = 0.06; // lower the surface slightly so balls sit on top
+  const SURFACE_OFFSET = 0.25; // lower the surface slightly so balls sit on top
 
   // Create geometry once based on sensor layout
   const geometry = useMemo(() => {
