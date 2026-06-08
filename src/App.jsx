@@ -7,11 +7,6 @@ import { theme } from './theme.js';
 
 export default function App() {
   const [telemetryHistory, setTelemetryHistory] = useState([]);
-  const [globalBounds, setGlobalBounds] = useState({
-    temperature: { min: 0, max: 1 },
-    humidity: { min: 0, max: 1 },
-    overview: { min: 0, max: 1 },
-  });
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [playSpeed, setPlaySpeed] = useState(1); 
@@ -45,7 +40,7 @@ export default function App() {
   useEffect(() => {
     const loadSimulationData = async () => {
       try {
-        const response = await fetch('/simulation_record.json');
+        const response = await fetch(`${import.meta.env.BASE_URL}simulation_record.json`);
         if (!response.ok) {
           throw new Error(`Failed to load simulation_record.json: ${response.statusText}`);
         }
@@ -74,44 +69,6 @@ export default function App() {
         });
 
         setTelemetryHistory(processedFrames);
-
-        const bounds = processedFrames.reduce((acc, frame) => {
-          frame.nodes.forEach((node) => {
-            const tempValue = node.is_permanent ? node.actual_temp : node.pred_temp;
-            const humValue = node.is_permanent ? node.actual_hum : node.pred_hum;
-            const overviewValue = node.is_permanent
-              ? (node.actual_temp + node.actual_hum) / 2
-              : (node.pred_temp + node.pred_hum) / 2;
-
-            acc.temperature.min = Math.min(acc.temperature.min, tempValue);
-            acc.temperature.max = Math.max(acc.temperature.max, tempValue);
-            acc.humidity.min = Math.min(acc.humidity.min, humValue);
-            acc.humidity.max = Math.max(acc.humidity.max, humValue);
-            acc.overview.min = Math.min(acc.overview.min, overviewValue);
-            acc.overview.max = Math.max(acc.overview.max, overviewValue);
-          });
-          return acc;
-        }, {
-          temperature: { min: Infinity, max: -Infinity },
-          humidity: { min: Infinity, max: -Infinity },
-          overview: { min: Infinity, max: -Infinity },
-        });
-
-        setGlobalBounds({
-          temperature: {
-            min: bounds.temperature.min === Infinity ? 0 : bounds.temperature.min,
-            max: bounds.temperature.max === -Infinity ? 1 : bounds.temperature.max,
-          },
-          humidity: {
-            min: bounds.humidity.min === Infinity ? 0 : bounds.humidity.min,
-            max: bounds.humidity.max === -Infinity ? 1 : bounds.humidity.max,
-          },
-          overview: {
-            min: bounds.overview.min === Infinity ? 0 : bounds.overview.min,
-            max: bounds.overview.max === -Infinity ? 1 : bounds.overview.max,
-          },
-        });
-
         if (processedFrames.length > 0) {
           setCurrentIndex(0);
         }
@@ -141,12 +98,6 @@ export default function App() {
     return () => clearInterval(playbackTimer.current);
   }, [isPlaying, telemetryHistory.length, playSpeed]);
 
-  const normalizeValueForMode = (value, mode) => {
-    const bounds = globalBounds[mode] || { min: 0, max: 1 };
-    const range = bounds.max - bounds.min || 1;
-    return (value - bounds.min) / range;
-  };
-
   const handleSensorSelect = (sensor) => {
     setSelectedSensor(sensor);
     if (viewMode === 'overview') setViewMode('temperature');
@@ -164,21 +115,16 @@ export default function App() {
 
   const getSensorBallHeight = (sensor, mode) => {
     if (!sensor) return 0;
-    let rawValue = 0;
-
     if (mode === 'temperature') {
-      rawValue = sensor.is_permanent ? sensor.actual_temp : sensor.pred_temp;
-    } else if (mode === 'humidity') {
-      rawValue = sensor.is_permanent ? sensor.actual_hum : sensor.pred_hum;
-    } else {
-      rawValue = sensor.is_permanent
-        ? (sensor.actual_temp + sensor.actual_hum) / 2
-        : (sensor.pred_temp + sensor.pred_hum) / 2;
+      return (sensor.is_permanent ? sensor.actual_temp : sensor.pred_temp) * 0.3;
     }
-
-    const normalized = normalizeValueForMode(rawValue, mode);
-    const heightScale = 3.2;
-    return normalized * heightScale;
+    if (mode === 'humidity') {
+      return (sensor.is_permanent ? sensor.actual_hum : sensor.pred_hum) * 0.3;
+    }
+    const value = sensor.is_permanent
+      ? (sensor.actual_temp + sensor.actual_hum) / 2
+      : (sensor.pred_temp + sensor.pred_hum) / 2;
+    return value * 0.3;
   };
 
   useEffect(() => {
@@ -344,7 +290,7 @@ export default function App() {
           <pointLight position={[10, 50, 10]} intensity={0.6} />
           <PerspectiveCamera makeDefault position={targetCameraPos.current} fov={50} />
           <OrbitControls target={targetLookAt.current} maxPolarAngle={Math.PI / 2 - 0.05} />
-          <SensorCluster telemetry={currentNodes} viewMode={viewMode} globalBounds={globalBounds} onSelectSensor={handleSensorSelect} selectedSensor={selectedSensor} />
+          <SensorCluster telemetry={currentNodes} viewMode={viewMode} onSelectSensor={handleSensorSelect} selectedSensor={selectedSensor} />
         </Canvas>
       </div>
     </div>
