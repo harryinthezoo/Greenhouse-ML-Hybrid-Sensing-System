@@ -8,6 +8,7 @@ import { theme } from './theme.js';
 function InterpolatedSurface({ telemetry, viewMode }) {
   const meshRef = useRef();
   const positionAttributeRef = useRef();
+  const SURFACE_OFFSET = 0.06; // lower the surface slightly so balls sit on top
 
   // Create geometry once based on sensor layout
   const geometry = useMemo(() => {
@@ -28,10 +29,10 @@ function InterpolatedSurface({ telemetry, viewMode }) {
     const vertices = [];
     const indices = [];
 
-    // Create vertex grid
+    // Create vertex grid (initialize slightly below zero so balls rest on surface)
     for (let i = 0; i < xCount; i++) {
       for (let j = 0; j < zCount; j++) {
-        vertices.push(uniqueX[i], 0, uniqueZ[j]);
+        vertices.push(uniqueX[i], -SURFACE_OFFSET, uniqueZ[j]);
       }
     }
 
@@ -94,7 +95,8 @@ function InterpolatedSurface({ telemetry, viewMode }) {
               : (sensor.pred_temp + sensor.pred_hum) / 2;
           }
 
-          positions[vertexIdx * 3 + 1] = height * 0.3;
+          // Keep the surface slightly below the ball by subtracting SURFACE_OFFSET
+          positions[vertexIdx * 3 + 1] = height * 0.3 - SURFACE_OFFSET;
         }
         vertexIdx++;
       }
