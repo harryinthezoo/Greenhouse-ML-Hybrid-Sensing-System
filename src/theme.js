@@ -1,0 +1,17 @@
+export const theme = {
+  bg: '#111913',
+  panel: 'rgba(26, 36, 24, 0.94)',
+  panelBorder: 'rgba(255,255,255,0.14)',
+  panelBorderLight: 'rgba(255,255,255,0.18)',
+  panelText: '#ffffff',
+  mutedText: 'rgba(255,255,255,0.72)',
+  panelSecondary: 'rgba(18, 22, 18, 0.98)',
+  accent: '#76a065',
+  accentSoft: '#9cc996',
+  predicted: '#ffffff',
+  physical: '#76a065',
+  reality: '#76a065',
+  buttonBorder: 'rgba(255,255,255,0.12)',
+  sliderAccent: '#76a065',
+  canvasSurface: '#3f6b4f',
+};
