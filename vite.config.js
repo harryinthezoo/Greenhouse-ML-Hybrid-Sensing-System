@@ -6,3 +6,4 @@ export default defineConfig({
   base: '/Greenhouse-ML-Hybrid-Sensing-System/',
   plugins: [react()],
 })
+
