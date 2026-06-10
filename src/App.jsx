@@ -17,12 +17,17 @@ export default function App() {
   const targetLookAt = useRef([0, 0, 0]);
   const playbackTimer = useRef(null);
   const [modeMenuOpen, setModeMenuOpen] = useState(false);
+  const [infoOpen, setInfoOpen] = useState(false);
   const modeMenuRef = useRef(null);
+  const infoRef = useRef(null);
 
   useEffect(() => {
     const onDocClick = (e) => {
       if (modeMenuOpen && modeMenuRef.current && !modeMenuRef.current.contains(e.target)) {
         setModeMenuOpen(false);
+      }
+      if (infoOpen && infoRef.current && !infoRef.current.contains(e.target)) {
+        setInfoOpen(false);
       }
     };
     const onKey = (e) => {
@@ -198,12 +203,120 @@ export default function App() {
     <div style={{ minHeight: '100vh', width: '100vw', backgroundColor: theme.bg, color: theme.panelText, fontFamily: 'monospace', position: 'relative', overflow: 'hidden' }}>
       
       {/* HUD Header Readouts */}
-      <div style={{ position: 'absolute', top: 20, left: 20, zIndex: 10, display: 'flex', flexDirection: 'column', gap: '6px', maxWidth: '50vw' }}>
-        <h2 style={{ margin: 20, fontWeight: 500, letterSpacing: '1px', fontSize: '1rem', maxWidth: 'min(64ch, 100%)' }}>Greenhouse ML Hybrid Sensing System Simulation</h2>
+      <div style={{ position: 'absolute', top: 20, left: 20, zIndex: 10, display: 'flex', flexDirection: 'column', gap: '10px', maxWidth: '50vw' }} ref={infoRef}>
+        <button onClick={() => setInfoOpen((open) => !open)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', padding: '16px 20px', borderRadius: '16px', border: `1px solid ${theme.panelBorder}`, background: theme.panel, color: theme.panelText, fontSize: '1rem', fontWeight: 600, cursor: 'pointer', textAlign: 'left', boxShadow: '0 18px 40px rgba(0,0,0,0.18)' }}>
+          <span>Greenhouse ML Hybrid Sensing System Simulation</span>
+          <span style={{ transform: infoOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 180ms ease' }}>⌄</span>
+        </button>
+
+        {infoOpen && (
+          <div style={{ width: 'min(100%, 680px)', background: theme.panelSecondary, border: `1px solid ${theme.panelBorder}`, borderRadius: '18px', padding: '22px', color: theme.panelText, boxShadow: '0 24px 60px rgba(0,0,0,0.2)', minHeight: '140px', maxHeight: 'calc(100vh - 360px)', overflowY: 'auto', textAlign: 'left', marginBottom: '32px' }}>
+            <p style={{ margin: 0, fontSize: '0.98rem', lineHeight: 1.7, color: theme.panelText, textAlign: 'left' }}>
+              Welcome to the interactive playback demo of Fovea, a next-generation greenhouse hybrid sensing system that combines physical sensors, machine learning, and virtual sensing to achieve high-resolution environmental awareness with reduced sensing infrastructure.
+            </p>
+
+            <p style={{ margin: '18px 0 0', fontSize: '0.98rem', lineHeight: 1.7, color: theme.panelText }}>
+              This demo showcases a high-fidelity greenhouse digital twin powered by a custom-trained GNN-LSTM (Graph Neural Network + Long Short-Term Memory) deep learning model. By learning spatial and temporal relationships between sensor locations, the system can accurately reconstruct microclimate conditions at locations where no physical sensor is present.
+            </p>
+
+            <h3 style={{ margin: '24px 0 10px', fontSize: '1rem', fontWeight: 700, letterSpacing: '0.7px' }}>Controls</h3>
+            <ul style={{ paddingLeft: '20px', margin: 0, lineHeight: 1.7, textAlign: 'left' }}>
+              <li>Left Mouse Button (LMB) — Rotate</li>
+              <li>Right Mouse Button (RMB) — Pan</li>
+              <li>Scroll Wheel — Zoom</li>
+            </ul>
+
+            <div style={{ margin: '22px 0', borderTop: `1px solid ${theme.panelBorder}`, opacity: 0.55 }} />
+
+            <h3 style={{ margin: '0 0 12px', fontSize: '1rem', fontWeight: 700, letterSpacing: '0.7px' }}>How the System Works</h3>
+            <div style={{ display: 'grid', gap: '16px' }}>
+              <div>
+                <h4 style={{ margin: '0 0 8px', fontSize: '0.95rem', fontWeight: 700 }}>1. Deploy</h4>
+                <p style={{ margin: 0, lineHeight: 1.7 }}>A dense sensor network is temporarily installed throughout the greenhouse to collect high-resolution environmental data.</p>
+              </div>
+              <div>
+                <h4 style={{ margin: '0 0 8px', fontSize: '0.95rem', fontWeight: 700 }}>2. Learn</h4>
+                <p style={{ margin: 0, lineHeight: 1.7 }}>Using continuous sensor measurements, the machine learning model learns relationships between environmental conditions across both space and time.</p>
+                <p style={{ margin: '10px 0 0', lineHeight: 1.7 }}>
+                  During training, the model predicts values at selected sensor locations and continuously compares these predictions against real sensor measurements. Prediction errors are used to iteratively improve the model until sufficient accuracy is achieved.
+                </p>
+              </div>
+              <div>
+                <h4 style={{ margin: '0 0 8px', fontSize: '0.95rem', fontWeight: 700 }}>3. Reduce</h4>
+                <p style={{ margin: 0, lineHeight: 1.7 }}>Once the model has demonstrated reliable performance on previously unseen data, the temporary sensor nodes are no longer required.</p>
+                <p style={{ margin: '10px 0 0', lineHeight: 1.7 }}>
+                  These sensors can be removed or redeployed elsewhere, reducing hardware, installation, calibration, and maintenance costs while retaining much of the original sensing resolution through virtual sensing.
+                </p>
+              </div>
+              <div>
+                <h4 style={{ margin: '0 0 8px', fontSize: '0.95rem', fontWeight: 700 }}>4. Infer</h4>
+                <p style={{ margin: 0, lineHeight: 1.7 }}>The remaining permanent sensors continue providing real-time measurements.</p>
+                <p style={{ margin: '10px 0 0', lineHeight: 1.7 }}>
+                  Using these inputs, the trained model reconstructs environmental conditions throughout the greenhouse, generating a high-resolution digital climate map that includes both physical and virtual sensing locations.
+                </p>
+              </div>
+              <div>
+                <h4 style={{ margin: '0 0 8px', fontSize: '0.95rem', fontWeight: 700 }}>5. Validate</h4>
+                <p style={{ margin: 0, lineHeight: 1.7 }}>In a future operational deployment, uncertain predictions, anomalies, or elevated disease-risk regions can trigger targeted validation using mobile sensing platforms, creating a hierarchical sensing architecture that combines sparse permanent sensing with adaptive high-resolution inspection.</p>
+              </div>
+              <div>
+                <h4 style={{ margin: '0 0 8px', fontSize: '0.95rem', fontWeight: 700 }}>6. Control</h4>
+                <p style={{ margin: 0, lineHeight: 1.7 }}>The reconstructed climate data can be integrated into greenhouse control systems, such as KUBO's AutoPylot, enabling climate control decisions to be based on a richer and more detailed understanding of greenhouse conditions.</p>
+              </div>
+            </div>
+
+            <div style={{ margin: '22px 0', borderTop: `1px solid ${theme.panelBorder}`, opacity: 0.55 }} />
+
+            <h3 style={{ margin: '0 0 12px', fontSize: '1rem', fontWeight: 700, letterSpacing: '0.7px' }}>Simulation Method</h3>
+            <div style={{ display: 'grid', gap: '16px' }}>
+              <div>
+                <h4 style={{ margin: '0 0 8px', fontSize: '0.95rem', fontWeight: 700 }}>Machine Learning Architecture</h4>
+                <ul style={{ paddingLeft: '20px', margin: 0, lineHeight: 1.7 }}>
+                  <li>Custom GNN-LSTM deep learning model</li>
+                  <li>Graph Neural Network (GNN) layer for spatial relationship learning</li>
+                  <li>Long Short-Term Memory (LSTM) layer for temporal pattern learning</li>
+                  <li>Genetic Algorithm for permanent sensor selection optimization</li>
+                </ul>
+              </div>
+              <div>
+                <h4 style={{ margin: '0 0 8px', fontSize: '0.95rem', fontWeight: 700 }}>Dataset</h4>
+                <p style={{ margin: 0, lineHeight: 1.7 }}>
+                  Training and validation data are based on the open-source greenhouse monitoring dataset:
+                </p>
+                <p style={{ margin: '10px 0 0 0.5rem', lineHeight: 1.7 }}>
+                  Singh, R. K., Rahmani, M. H., Weyn, M., & Berkvens, R. (2022). Joint Communication and Sensing: A Proof of Concept and Datasets for Greenhouse Monitoring Using LoRaWAN. Sensors, 22(4), 1326.
+                </p>
+                <p style={{ margin: 0, lineHeight: 1.7 }}>
+                  DOI: <a href="https://doi.org/10.3390/s22041326" target="_blank" rel="noreferrer noopener" style={{ color: theme.accent, textDecoration: 'underline' }}>https://doi.org/10.3390/s22041326</a>
+                </p>
+              </div>
+              <div>
+                <h4 style={{ margin: '0 0 8px', fontSize: '0.95rem', fontWeight: 700 }}>Dataset Specifications</h4>
+                <ul style={{ paddingLeft: '20px', margin: 0, lineHeight: 1.7 }}>
+                  <li>9 months of continuous greenhouse measurements</li>
+                  <li>10-minute sampling interval</li>
+                  <li>Temperature and relative humidity data</li>
+                  <li>27 sensor locations in total</li>
+                  <li>14 permanent sensor locations</li>
+                  <li>13 virtual sensor locations</li>
+                  <li>80/20 training-validation split</li>
+                  <li>Global Z-score normalization applied across all sensors and features</li>
+                </ul>
+              </div>
+            </div>
+
+            <div style={{ margin: '22px 0', borderTop: `1px solid ${theme.panelBorder}`, opacity: 0.55 }} />
+
+            <h3 style={{ margin: '0 0 12px', fontSize: '1rem', fontWeight: 700, letterSpacing: '0.7px' }}>Disclaimer</h3>
+            <p style={{ margin: 0, lineHeight: 1.7 }}>
+              This demonstrator is intended as a proof-of-concept for exploring the feasibility of hybrid physical-virtual sensing systems in greenhouse environments. The presented model and dataset are used to demonstrate the underlying sensing architecture and should not be interpreted as a production-ready greenhouse control solution.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* TIMELINE CONTROL DECK */}
-      <div style={{ position: 'absolute', bottom: 110, left: '50%', transform: 'translateX(-50%)', zIndex: 10, width: 'min(92vw, 840px)', minWidth: '320px', background: theme.panel, padding: '16px 22px', borderRadius: '10px', border: `1px solid ${theme.panelBorder}`, backdropFilter: 'blur(14px)', boxShadow: '0 24px 50px rgba(0,0,0,0.35)' }}>
+      <div style={{ position: 'absolute', bottom: 78, left: '50%', transform: 'translateX(-50%)', zIndex: 10, width: 'min(92vw, 840px)', minWidth: '320px', background: theme.panel, padding: '14px 20px', borderRadius: '10px', border: `1px solid ${theme.panelBorder}`, backdropFilter: 'blur(14px)', boxShadow: '0 24px 50px rgba(0,0,0,0.35)' }}>
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '16px', marginBottom: '14px' }}>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '14px', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center', fontSize: '11px', color: theme.panelText }}>

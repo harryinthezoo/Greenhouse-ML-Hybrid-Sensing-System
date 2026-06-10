@@ -8,8 +8,6 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     permissions:
       pages: write
       id-token: write
@@ -18,13 +16,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           cache: "npm"
-          node-version: "24"
+          node-version: "20"
       - run: npm install
       - run: npm run build
       - uses: actions/configure-pages@v4
-        with:
-          enablement: github-actions
-      - uses: actions/upload-pages-artifact@v5
+      - uses: actions/upload-pages-artifact@v1
         with:
           path: dist
-      - uses: actions/deploy-pages@v4
+      - uses: actions/deploy-pages@v1
