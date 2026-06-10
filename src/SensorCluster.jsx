@@ -86,16 +86,14 @@ function InterpolatedSurface({ telemetry, viewMode }) {
           let height = 0;
 
           if (viewMode === 'temperature') {
-            height = sensor.is_permanent ? sensor.actual_temp : sensor.pred_temp;
+            height = sensor.actual_temp;
           } else if (viewMode === 'humidity') {
-            height = sensor.is_permanent ? sensor.actual_hum : sensor.pred_hum;
+            height = sensor.actual_hum;
           } else {
-            height = sensor.is_permanent 
-              ? (sensor.actual_temp + sensor.actual_hum) / 2 
-              : (sensor.pred_temp + sensor.pred_hum) / 2;
+            height = (sensor.actual_temp + sensor.actual_hum) / 2;
           }
 
-          // Keep the surface slightly below the ball by subtracting SURFACE_OFFSET
+          // Keep the surface slightly below the reality ring height by subtracting SURFACE_OFFSET
           positions[vertexIdx * 3 + 1] = height * 0.3 - SURFACE_OFFSET;
         }
         vertexIdx++;
